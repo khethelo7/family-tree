@@ -1,0 +1,144 @@
+
+
+/* === Variables For Future reference === */
+:root {
+  --bg: #f4f6fa;
+  --text: #333;
+  --grandparent-color: #a682ff;
+  --partner-color: #ccc;
+  --partner-hover: #888;
+  --parent-color: #6c63ff;
+  --parent-hover: #4e4ad8;
+  --child-color: #ffc107;
+}
+
+
+/* === Base Layout === */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f4f6fa; /* Page background */
+  color: #333;
+}
+
+.tree-wrapper {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+  position: relative;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+
+/* === Grandparent Section === */
+.generation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 60px;              /* Horizontal spacing between siblings */
+  margin-bottom: 60px;    /* Vertical spacing between generations */
+  position: relative;
+}
+
+.grandparent-node {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #a682ff;    /* Grandparent color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 1;
+  position: relative;
+}
+
+
+/* === Partner Icons (Floating) === */
+.partner-container {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.partner-container.left {
+  margin-right: 30px;
+  align-items: flex-end;
+}
+
+.partner-container.right {
+  margin-left: 30px;
+  align-items: flex-start;
+}
+
+.partner-icon {
+  width: 40px;
+  height: 40px;
+  background: #ccc;       /* Partner icon background */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.partner-icon:hover {
+  transform: scale(1.2);
+  background: #888;       /* Hover color */
+}
+
+
+/* === Parent Generation === */
+.person-container {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.person {
+  width: 80px;
+  height: 80px;
+  background: #6c63ff;     /* Parent/children color */
+  color: #fff;
+  font-size: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+  transition: transform 0.2s ease;
+}
+
+.person:hover {
+  transform: scale(1.1);
+  background: #4e4ad8;     /* Hover color */
+}
+
+
+/* === Child (Grandchildren) Generation === */
+#child-section {
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+#child-section .grandchild {
+  background: #ffc107;      /* Grandchild node color */
+}
+
+
+/* === SVG Connector Lines === */
+svg#connectors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
