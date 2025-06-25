@@ -1,52 +1,4 @@
-const grandparent = {
-  name: "Mkhulu Mthinsi",
-  emoji: "👴",
-  partners: [
-    { name: "Wife 1", emoji: "👵" }
-  ],
-  children: [
-    {
-      name: "Zakhele",
-      emoji: "👨",
-      partners: [
-        { name: "Nonkululeko", emoji: "👩" }
-      ],
-      children: ["Sihle", "Ganozi", "Siyabonga", "Sthe", "Andile", "Khethelo"]
-    },
-    {
-      name: "Sipho",
-      emoji: "👨",
-      partners: [],
-      children: ["Bheki"]
-    },
-    {
-      name: "Dodge",
-      emoji: "👨",
-      partners: [
-        { name: "Nozipho", emoji: "👩" }
-      ],
-      children: ["Nqobile", "Khanyo"]
-    },
-    {
-      name: "Carro",
-      emoji: "👩",
-      partners: [],
-      children: ["Lulu"]
-    },
-    {
-      name: "Stutu",
-      emoji: "👩",
-      partners: [],
-      children: ["Sthembile"]
-    },
-    {
-      name: "Vuyi",
-      emoji: "👩",
-      partners: [],
-      children: ["Papi", "Twana"]
-    }
-  ]
-};
+const grandparent = familyData.grandparent;
 
 
 document.getElementById("grandparent-name").textContent = grandparent.name;
@@ -66,10 +18,14 @@ grandparent.partners.forEach((partner) => {
   leftPartnerCol.appendChild(icon);
 });
 
+// CREATING THE GRANDPARENT ELEMENT
 const grandEl = document.createElement("div");
-grandEl.className = "grandparent-node";
+grandEl.className = "person grandparent";
 grandEl.textContent = grandparent.emoji;
 grandEl.setAttribute("data-id", "grand");
+grandEl.onclick = () => {
+  window.location.href = `profile.html?person=${encodeURIComponent(grandparent.name)}`;
+};
 
 const rightPartnerCol = document.createElement("div");
 rightPartnerCol.className = "partner-column right";
@@ -101,6 +57,9 @@ parent.partners.forEach((partner) => {
 
 const nodeEl = document.createElement("div");
 nodeEl.className = "person parent";
+nodeEl.onclick = () => {
+  window.location.href = `profile.html?person=${encodeURIComponent(parent.name)}`;
+};
 nodeEl.textContent = parent.emoji;
 nodeEl.setAttribute("data-id", `parent-${index}`);
 
@@ -119,6 +78,9 @@ block.appendChild(parentWrapper);
   parent.children.forEach((child, cIdx) => {
     const childEl = document.createElement("div");
     childEl.className = "person child";
+    childEl.onclick = () => {
+      window.location.href = `profile.html?person=${encodeURIComponent(child)}`;
+    };
     childEl.textContent = "👶";
     childEl.setAttribute("data-id", `child-${index}-${cIdx}`);
     childRow.appendChild(childEl);
