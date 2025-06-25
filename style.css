@@ -109,6 +109,12 @@ svg#connectors {
   z-index: 0;
 }
 
+.person,
+.partner-icon {
+  position: relative;
+  z-index: 1;
+}
+
 .person-wrapper {
   display: flex;
   align-items: center;
@@ -148,4 +154,47 @@ svg#connectors {
 .partner-icon:hover {
   transform: scale(1.15);
   background: #777;
+}
+
+.person {
+  width: 80px;
+  height: 80px;
+  background: #6c63ff;
+  color: #fff;
+  font-size: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.person:hover {
+  transform: scale(1.1);
+  background: #4e4ad8;
+}
+
+.person.grandparent {
+  background: #3b009e;
+}
+
+.person.grandparent:hover {
+  background: #4a11c2;
+}
+
+.person.parent {
+  background: #4e1fa6;
+}
+
+.person.parent:hover {
+  background: #6633cc;
+}
+
+.person.child {
+  background: #f9a825;
+}
+
+.person.child:hover {
+  background: #ffc107;
 }
