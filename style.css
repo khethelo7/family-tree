@@ -10,21 +10,21 @@
   --parent-color: #6c63ff;
   --parent-hover: #4e4ad8;
   --child-color: #ffc107;
+  --child-hover: #ff9800;
 }
 
-
-/* === Base Layout === */
+/* === General Page Styles === */
 body {
   margin: 0;
   font-family: sans-serif;
-  background: #f4f6fa; /* Page background */
-  color: #333;
+  background: #1e1e1e;
+  color: #f0f0f0;
 }
 
 .tree-wrapper {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: auto;
-  padding: 20px;
+  padding: 40px 20px;
   position: relative;
 }
 
@@ -33,112 +33,119 @@ header {
   margin-bottom: 30px;
 }
 
-
-/* === Grandparent Section === */
-.generation {
+/* === Grandparent === */
+#generation-grandparent {
   display: flex;
   justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 60px;              /* Horizontal spacing between siblings */
-  margin-bottom: 60px;    /* Vertical spacing between generations */
-  position: relative;
+  margin-bottom: 60px;
 }
 
 .grandparent-node {
   width: 100px;
   height: 100px;
+  background: #3b009e;
+  color: #fff;
   border-radius: 50%;
-  background: #a682ff;    /* Grandparent color */
+  font-size: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  z-index: 1;
+}
+
+/* === Parent & Children === */
+.parent-generation {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  flex-wrap: wrap;
   position: relative;
 }
 
-
-/* === Partner Icons (Floating) === */
-.partner-container {
-  width: 80px;
+.parent-block {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.partner-container.left {
-  margin-right: 30px;
-  align-items: flex-end;
-}
-
-.partner-container.right {
-  margin-left: 30px;
-  align-items: flex-start;
-}
-
-.partner-icon {
-  width: 40px;
-  height: 40px;
-  background: #ccc;       /* Partner icon background */
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  gap: 20px;
 }
 
-.partner-icon:hover {
-  transform: scale(1.2);
-  background: #888;       /* Hover color */
-}
-
-
-/* === Parent Generation === */
-.person-container {
-  display: flex;
-  align-items: center;
-  margin: 0 10px;
-}
-
-.person {
+.parent {
+  background: #4e1fa6;
+  color: #fff;
   width: 80px;
   height: 80px;
-  background: #6c63ff;     /* Parent/children color */
-  color: #fff;
-  font-size: 24px;
   border-radius: 50%;
+  font-size: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: default;
-  transition: transform 0.2s ease;
 }
 
-.person:hover {
-  transform: scale(1.1);
-  background: #4e4ad8;     /* Hover color */
+.children-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-
-/* === Child (Grandchildren) Generation === */
-#child-section {
-  overflow-x: auto;
-  padding-bottom: 10px;
+.child {
+  background: #c19006;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  font-size: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#child-section .grandchild {
-  background: #ffc107;      /* Grandchild node color */
-}
-
-
-/* === SVG Connector Lines === */
+/* === Connectors === */
 svg#connectors {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  z-index: 0;
+}
+
+.person-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+}
+
+.partner-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.partner-column.left {
+  align-items: flex-end;
+}
+
+.partner-column.right {
+  align-items: flex-start;
+}
+
+.partner-icon {
+  width: 32px;
+  height: 32px;
+  background: #444;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.partner-icon:hover {
+  transform: scale(1.15);
+  background: #777;
 }
