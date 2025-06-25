@@ -1,18 +1,29 @@
-// Parse query string (e.g., ?person=Zakhele)
+// Parse query string (e.g., ?id=ZAK234)
 const params = new URLSearchParams(window.location.search);
-const personName = params.get("person");
+const personId = params.get("id");
 
-function findPersonByName(name, data) {
-  if (data.name === name) return data;
-  if (data.children) {
-    for (const child of data.children) {
-      if (child.name === name) return child;
+function findPersonById(id, node) {
+  if (node.id === id) return node;
+
+  if (node.partners) {
+    for (const p of node.partners) {
+      if (p.id === id) return p;
     }
   }
+
+  if (node.children) {
+    for (const child of node.children) {
+      if (typeof child === "object" && child.id === id) return child;
+      const found = findPersonById(id, child);
+      if (found) return found;
+    }
+  }
+
   return null;
 }
 
-const person = findPersonByName(personName, familyData.grandparent);
+const person = findPersonById(personId, familyData.grandparent);
+
 
 if (person) {
   document.getElementById("profile-name").textContent = person.name;
