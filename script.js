@@ -1,186 +1,187 @@
-// --- Node-based data model ---
 const grandparent = {
   name: "Mkhulu Mthinsi",
   emoji: "👴",
-  partners: ["Wife 1"],
+  partners: [
+    { name: "Wife 1", emoji: "👵" }
+  ],
   children: [
     {
       name: "Zakhele",
       emoji: "👨",
-      partners: ["Nandi", "Thandi"],
-      children: ["Child 1", "Child 2", "Child 3", "Child 4", "Child 5", "Child 6"]
+      partners: [
+        { name: "Nonkululeko", emoji: "👩" }
+      ],
+      children: ["Sihle", "Ganozi", "Siyabonga", "Sthe", "Andile", "Khethelo"]
     },
     {
-      name: "Vuyi",
+      name: "Sipho",
+      emoji: "👨",
+      partners: [],
+      children: ["Bheki"]
+    },
+    {
+      name: "Dodge",
+      emoji: "👨",
+      partners: [
+        { name: "Nozipho", emoji: "👩" }
+      ],
+      children: ["Nqobile", "Khanyo"]
+    },
+    {
+      name: "Carro",
       emoji: "👩",
-      partners: ["Thabo"],
-      children: ["Child 7", "Child 8"]
+      partners: [],
+      children: ["Lulu"]
     },
     {
       name: "Stutu",
       emoji: "👩",
-      partners: ["Sipho"],
-      children: ["Child 9"]
+      partners: [],
+      children: ["Sthembile"]
+    },
+    {
+      name: "Vuyi",
+      emoji: "👩",
+      partners: [],
+      children: ["Papi", "Twana"]
     }
-  ],
+  ]
 };
 
-// --- Render Function ---
-function renderGrandparentNode(data) {
-  document.getElementById("grandparent-name").textContent = data.name;
-  const node = document.getElementById("grandparent-node");
-  node.textContent = data.emoji;
 
-  const left = document.getElementById("partner-left");
-  const right = document.getElementById("partner-right");
+document.getElementById("grandparent-name").textContent = grandparent.name;
 
-  // Split partners for display: half on left, half on right
-  const mid = Math.ceil(data.partners.length / 2);
-  const leftPartners = data.partners.slice(0, mid);
-  const rightPartners = data.partners.slice(mid);
+// Render Grandparent
+const grandGen = document.getElementById("grandparent-gen");
+const grandWrapper = document.createElement("div");
+grandWrapper.className = "person-wrapper";
 
-  left.innerHTML = "";
-  right.innerHTML = "";
+const leftPartnerCol = document.createElement("div");
+leftPartnerCol.className = "partner-column left";
+grandparent.partners.forEach((partner) => {
+  const icon = document.createElement("div");
+  icon.className = "partner-icon";
+  icon.textContent = partner.emoji;
+  icon.onclick = () => alert(`Switching to partner: ${partner.name}`);
+  leftPartnerCol.appendChild(icon);
+});
 
-  leftPartners.forEach(name => {
-    const el = document.createElement("div");
-    el.className = "partner-icon";
-    el.textContent = "🧓";
-    el.title = name;
-    el.onclick = () => alert(`View ${name}'s info`);
-    left.appendChild(el);
+const grandEl = document.createElement("div");
+grandEl.className = "grandparent-node";
+grandEl.textContent = grandparent.emoji;
+grandEl.setAttribute("data-id", "grand");
+
+const rightPartnerCol = document.createElement("div");
+rightPartnerCol.className = "partner-column right";
+
+grandWrapper.appendChild(leftPartnerCol);
+grandWrapper.appendChild(grandEl);
+grandWrapper.appendChild(rightPartnerCol);
+grandGen.appendChild(grandWrapper);
+
+// Render Parents + Children
+const parentGen = document.getElementById("parent-gen");
+
+grandparent.children.forEach((parent, index) => {
+  const block = document.createElement("div");
+  block.className = "parent-block";
+
+  const parentWrapper = document.createElement("div");
+parentWrapper.className = "person-wrapper";
+
+const leftCol = document.createElement("div");
+leftCol.className = "partner-column left";
+parent.partners.forEach((partner) => {
+  const icon = document.createElement("div");
+  icon.className = "partner-icon";
+  icon.textContent = partner.emoji;
+  icon.onclick = () => alert(`Switching to partner: ${partner.name}`);
+  leftCol.appendChild(icon);
+});
+
+const nodeEl = document.createElement("div");
+nodeEl.className = "person parent";
+nodeEl.textContent = parent.emoji;
+nodeEl.setAttribute("data-id", `parent-${index}`);
+
+const rightCol = document.createElement("div");
+rightCol.className = "partner-column right";
+
+parentWrapper.appendChild(leftCol);
+parentWrapper.appendChild(nodeEl);
+parentWrapper.appendChild(rightCol);
+block.appendChild(parentWrapper);
+
+
+  const childRow = document.createElement("div");
+  childRow.className = "children-row";
+
+  parent.children.forEach((child, cIdx) => {
+    const childEl = document.createElement("div");
+    childEl.className = "person child";
+    childEl.textContent = "👶";
+    childEl.setAttribute("data-id", `child-${index}-${cIdx}`);
+    childRow.appendChild(childEl);
   });
 
-  rightPartners.forEach(name => {
-    const el = document.createElement("div");
-    el.className = "partner-icon";
-    el.textContent = "🧓";
-    el.title = name;
-    el.onclick = () => alert(`View ${name}'s info`);
-    right.appendChild(el);
-  });
-}
+  block.appendChild(childRow);
+  parentGen.appendChild(block);
+});
 
-function renderChildren(data) {
-  const parentSection = document.getElementById("parent-section");
-  parentSection.innerHTML = "";
-
-  data.children.forEach(child => {
-    const container = document.createElement("div");
-    container.className = "person-container";
-
-    // Left partners
-    const left = document.createElement("div");
-    left.className = "partner-container left";
-    (child.partners || []).slice(0, 1).forEach(name => {
-      const icon = document.createElement("div");
-      icon.className = "partner-icon";
-      icon.textContent = "🧓";
-      icon.title = name;
-      icon.onclick = () => alert(`View ${name}'s info`);
-      left.appendChild(icon);
-    });
-
-    // Node
-    const node = document.createElement("div");
-    node.className = "person";
-    node.textContent = child.emoji;
-    node.title = child.name;
-
-    // Right partners
-    const right = document.createElement("div");
-    right.className = "partner-container right";
-    (child.partners || []).slice(1).forEach(name => {
-      const icon = document.createElement("div");
-      icon.className = "partner-icon";
-      icon.textContent = "🧓";
-      icon.title = name;
-      icon.onclick = () => alert(`View ${name}'s info`);
-      right.appendChild(icon);
-    });
-
-    container.appendChild(left);
-    container.appendChild(node);
-    container.appendChild(right);
-
-    parentSection.appendChild(container);
-  });
-}
-
-function renderGrandChildren(data) {
-  const childSection = document.getElementById("child-section");
-  childSection.innerHTML = "";
-
-  data.children.forEach(parent => {
-    parent.children.forEach((kidName, index) => {
-      const div = document.createElement("div");
-      div.className = "grandchild person";
-      div.textContent = "🧒";
-      div.title = kidName;
-      div.setAttribute("data-parent", parent.name);
-      div.setAttribute("data-index", index);
-      childSection.appendChild(div);
-    });
-  });
-}
-
-function drawLines() {
+// === Connect with SVG Paths ===
+function drawConnections() {
   const svg = document.getElementById("connectors");
   svg.innerHTML = "";
 
-  const grand = document.getElementById("grandparent-node");
-  const parentContainers = document.querySelectorAll("#parent-section .person");
-  const grandchildNodes = document.querySelectorAll("#child-section .grandchild");
-
+  const grandRect = grandEl.getBoundingClientRect();
   const svgRect = svg.getBoundingClientRect();
 
-  // Grandparent → Parents
-  const gRect = grand.getBoundingClientRect();
-  const gX = gRect.left + gRect.width / 2 - svgRect.left;
-  const gY = gRect.bottom - svgRect.top;
+  // Parent links
+  document.querySelectorAll(".parent").forEach((parentEl) => {
+    const parentRect = parentEl.getBoundingClientRect();
+    const startX = grandRect.left + grandRect.width / 2 - svgRect.left;
+    const startY = grandRect.bottom - svgRect.top;
 
-  parentContainers.forEach(parent => {
-    const pRect = parent.getBoundingClientRect();
-    const pX = pRect.left + pRect.width / 2 - svgRect.left;
-    const pY = pRect.top - svgRect.top;
+    const endX = parentRect.left + parentRect.width / 2 - svgRect.left;
+    const endY = parentRect.top - svgRect.top;
 
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", `M${gX},${gY} C${gX},${gY + 50} ${pX},${pY - 50} ${pX},${pY}`);
-    path.setAttribute("stroke", "#888");
+    path.setAttribute(
+      "d",
+      `M${startX},${startY} C${startX},${startY + 60} ${endX},${endY - 60} ${endX},${endY}`
+    );
+    path.setAttribute("stroke", "#bfbfbf");
+    path.setAttribute("fill", "none");
     path.setAttribute("stroke-width", "2");
-    path.setAttribute("fill", "transparent");
     svg.appendChild(path);
   });
 
-  // Parent → Children
-  grandchildNodes.forEach(child => {
-    const parentName = child.getAttribute("data-parent");
-    const parent = Array.from(parentContainers).find(p => p.title === parentName);
-    if (!parent) return;
+  // Child links
+  document.querySelectorAll(".parent-block").forEach((block) => {
+    const parentEl = block.querySelector(".parent");
+    const parentRect = parentEl.getBoundingClientRect();
 
-    const cRect = child.getBoundingClientRect();
-    const pRect = parent.getBoundingClientRect();
+    const children = block.querySelectorAll(".child");
+    children.forEach((childEl) => {
+      const childRect = childEl.getBoundingClientRect();
+      const startX = parentRect.left + parentRect.width / 2 - svgRect.left;
+      const startY = parentRect.bottom - svgRect.top;
 
-    const cX = cRect.left + cRect.width / 2 - svgRect.left;
-    const cY = cRect.top - svgRect.top;
+      const endX = childRect.left + childRect.width / 2 - svgRect.left;
+      const endY = childRect.top - svgRect.top;
 
-    const pX = pRect.left + pRect.width / 2 - svgRect.left;
-    const pY = pRect.bottom - svgRect.top;
-
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", `M${pX},${pY} C${pX},${pY + 50} ${cX},${cY - 50} ${cX},${cY}`);
-    path.setAttribute("stroke", "#a682ff");
-    path.setAttribute("stroke-width", "2");
-    path.setAttribute("fill", "transparent");
-    svg.appendChild(path);
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute(
+        "d",
+        `M${startX},${startY} C${startX},${startY + 40} ${endX},${endY - 40} ${endX},${endY}`
+      );
+      path.setAttribute("stroke", "#a682ff");
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke-width", "2");
+      svg.appendChild(path);
+    });
   });
 }
 
-
-// --- Load tree ---
-renderGrandparentNode(grandparent);
-renderChildren(grandparent);
-renderGrandChildren(grandparent);
-
-window.addEventListener("load", () => setTimeout(drawLines, 100));
-window.addEventListener("resize", () => setTimeout(drawLines, 100));
+window.addEventListener("load", () => setTimeout(drawConnections, 100));
+window.addEventListener("resize", () => setTimeout(drawConnections, 100));
