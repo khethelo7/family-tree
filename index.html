@@ -1,29 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Family Tree</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="tree-wrapper">
     <header>
-      <h1 id="grandparent-name">Loading...</h1>
+      <h1 id="grandparent-name">Mkhulu Mthinsi</h1>
     </header>
 
-    <section id="grandparent-section" class="generation">
-      <!-- Partner icons (left & right) -->
-      <div id="partner-left" class="partner-container left"></div>
-      <div class="grandparent-node" id="grandparent-node"></div>
-      <div id="partner-right" class="partner-container right"></div>
-    </section>
+    <div class="generation" id="grandparent-gen"></div>
+    <div class="generation parent-generation" id="parent-gen"></div>
 
-    <!-- Future containers -->
-    <section id="parent-section" class="generation"></section>
-    <section id="child-section" class="generation"></section>
-
-    <svg id="connectors" width="100%" height="100%"></svg>
+    <svg id="connectors"></svg>
   </div>
 
   <script src="script.js"></script>
