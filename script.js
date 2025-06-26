@@ -159,5 +159,24 @@ document.getElementById("next-grand").onclick = () => {
   renderTree(grandparent);
 };
 
+function renderMiniMap() {
+  const miniList = document.getElementById("mini-branch-list");
+  miniList.innerHTML = "";
+
+  familyData.grandparents.forEach((gp, i) => {
+    const li = document.createElement("li");
+    li.textContent = gp.name;
+    li.className = i === currentGrandIndex ? "active" : "";
+    li.onclick = () => {
+      currentGrandIndex = i;
+      renderTree(familyData.grandparents[i]);
+    };
+    miniList.appendChild(li);
+  });
+}
+
+renderMiniMap();
 window.addEventListener("load", () => renderTree(grandparent));
 window.addEventListener("resize", () => setTimeout(drawConnections, 100));
+
+
