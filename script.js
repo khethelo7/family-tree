@@ -2,6 +2,29 @@
 let currentGrandIndex = 0;
 let grandparent = familyData.grandparents[currentGrandIndex];
 
+function createPersonElement(person, className) {
+  const el = document.createElement("div");
+  el.className = `person ${className}`;
+  el.title = person.name;
+
+  const img = document.createElement("img");
+  img.src = person.image || "";
+  img.alt = person.name;
+  img.onerror = () => {
+    img.remove();
+    el.textContent = person.emoji || "❓";
+  };
+  img.loading = "lazy";
+
+  el.appendChild(img);
+  el.onclick = () => {
+    window.location.href = `profile.html?id=${person.id}`;
+  };
+
+  return el;
+}
+
+
 function renderTree(grandparent) {
   document.getElementById("grandparent-gen").innerHTML = "";
   document.getElementById("parent-gen").innerHTML = "";
@@ -25,9 +48,7 @@ function renderTree(grandparent) {
     leftPartnerCol.appendChild(icon);
   });
 
-  const grandEl = document.createElement("div");
-  grandEl.className = "person grandparent";
-  grandEl.textContent = grandparent.emoji;
+  const grandEl = createPersonElement(grandparent, "grandparent");
   grandEl.setAttribute("data-id", "grand");
   grandEl.title = grandparent.name;
   grandEl.onclick = () => {
@@ -63,10 +84,8 @@ function renderTree(grandparent) {
       leftCol.appendChild(icon);
     });
 
-    const nodeEl = document.createElement("div");
-    nodeEl.className = "person parent";
+    const nodeEl = createPersonElement(parent, "parent");
     nodeEl.title = parent.name;
-    nodeEl.textContent = parent.emoji;
     nodeEl.setAttribute("data-id", `parent-${index}`);
     nodeEl.onclick = () => {
       window.location.href = `profile.html?id=${parent.id}`;
@@ -80,22 +99,34 @@ function renderTree(grandparent) {
     parentWrapper.appendChild(rightCol);
     block.appendChild(parentWrapper);
 
-    const childRow = document.createElement("div");
-    childRow.className = "children-row";
+      const childRow = document.createElement("div");
+  childRow.className = "children-row";
 
-    parent.children.forEach((child, cIdx) => {
-      const childEl = document.createElement("div");
-      childEl.className = "person child";
-      childEl.title = child.name || child;
-      childEl.textContent = child.emoji || "👶";
-      childEl.setAttribute("data-id", `child-${index}-${cIdx}`);
-      childEl.onclick = () => {
-        window.location.href = `profile.html?id=${child.id || child}`;
-      };
-      childRow.appendChild(childEl);
-    });
+  parent.children.forEach((child) => {
+    const childWrapper = document.createElement("div");
+    childWrapper.className = "child-block"; // new wrapper
 
-    block.appendChild(childRow);
+    const childEl = createPersonElement(child, "child");
+    childWrapper.appendChild(childEl);
+
+    // --- Render grandchildren if child has children ---
+    if (child.children && child.children.length > 0) {
+      const grandchildRow = document.createElement("div");
+      grandchildRow.className = "grandchildren-row";
+
+      child.children.forEach((grandchild) => {
+        const grandchildEl = createPersonElement(grandchild, "grandchild");
+        grandchildRow.appendChild(grandchildEl);
+      });
+
+      childWrapper.appendChild(grandchildRow);
+    }
+
+    childRow.appendChild(childWrapper);
+  });
+
+  block.appendChild(childRow);
+
     parentGen.appendChild(block);
   });
 
@@ -142,8 +173,35 @@ function drawConnections() {
       path.setAttribute("fill", "none");
       path.setAttribute("stroke-width", "2");
       svg.appendChild(path);
+      // Child → Grandchild lines
+    block.querySelectorAll(".child-block").forEach((childBlock) => {
+      const childEl = childBlock.querySelector(".child");
+      if (!childEl) return;
+  
+      const childRect = childEl.getBoundingClientRect();
+      const startX = childRect.left + childRect.width / 2 - svgRect.left;
+      const startY = childRect.bottom - svgRect.top;
+  
+      const grandkids = childBlock.querySelectorAll(".grandchild");
+      grandkids.forEach((grandEl) => {
+        const grandRect = grandEl.getBoundingClientRect();
+        const endX = grandRect.left + grandRect.width / 2 - svgRect.left;
+        const endY = grandRect.top - svgRect.top;
+  
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute(
+          "d",
+          `M${startX},${startY} C${startX},${startY + 30} ${endX},${endY - 30} ${endX},${endY}`
+        );
+        path.setAttribute("stroke", "#ffc300");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-width", "2");
+        svg.appendChild(path);
+      });
+    });
     });
   });
+
 }
 
 // Grandparent navigation
