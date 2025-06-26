@@ -291,6 +291,61 @@ svg#connectors {
   background-color: #ffc300;
 }
 
+.legend {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: #2c2c2c;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  max-width: 220px;
+}
+
+.legend-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.color-line {
+  width: 20px;
+  height: 4px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.color-line.gray {
+  background: #bfbfbf;
+}
+
+.color-line.purple {
+  background: #a682ff;
+}
+
+.color-line.yellow {
+  background: #ffc300;
+}
+
+.emoji-icon {
+  font-size: 16px;
+}
 
 
 /* === Pulse Animation === */
