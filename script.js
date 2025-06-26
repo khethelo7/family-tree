@@ -224,14 +224,17 @@ function renderMiniMap() {
   familyData.grandparents.forEach((gp, i) => {
     const li = document.createElement("li");
     li.textContent = gp.name;
-    li.className = i === currentGrandIndex ? "active" : "";
+
     li.onclick = () => {
       currentGrandIndex = i;
-      renderTree(familyData.grandparents[i]);
+      grandparent = familyData.grandparents[i];     // update the global grandparent
+      renderTree(grandparent);                      // re-renders entire tree AND miniMap
     };
+
     miniList.appendChild(li);
   });
 }
+
 
 renderMiniMap();
 window.addEventListener("load", () => renderTree(grandparent));
