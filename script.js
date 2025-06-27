@@ -201,76 +201,128 @@ function drawConnections() {
 
 function drawSVGTree(grandparent) {
   const svg = document.getElementById("svg-tree");
-  svg.innerHTML = ""; // Clear previous
+  svg.innerHTML = "";
+
+  const centerX = window.innerWidth / 2;
+  const baseY = 100;
+  const nodeRadius = 35;
+  const gapX = 150;
+  const gapY = 130;
 
   const nodes = [];
   const lines = [];
 
-  const centerX = window.innerWidth / 2;
-  const baseY = 100;
-
-  // 1. Grandparent node
+  // === Grandparent
   nodes.push({
     person: grandparent,
     x: centerX,
     y: baseY
   });
 
-  // 2. Parent nodes
-  const gap = 150;
-  grandparent.children.forEach((parent, i) => {
-    const px = centerX - ((grandparent.children.length - 1) * gap) / 2 + i * gap;
-    const py = baseY + 150;
-
+  // === Parents
+  const parents = grandparent.children;
+  const startX = centerX - ((parents.length - 1) * gapX) / 2;
+  parents.forEach((parent, i) => {
+    const px = startX + i * gapX;
+    const py = baseY + gapY;
     nodes.push({ person: parent, x: px, y: py });
 
+    // Link grandparent → parent
     lines.push({
       from: { x: centerX, y: baseY },
       to: { x: px, y: py },
       color: "#bfbfbf"
     });
+
+    // === Children of parent
+    if (parent.children?.length > 0) {
+      const cStartX = px - ((parent.children.length - 1) * gapX) / 2;
+      parent.children.forEach((child, j) => {
+        const cx = cStartX + j * gapX;
+        const cy = py + gapY;
+        nodes.push({ person: child, x: cx, y: cy });
+
+        // Link parent → child
+        lines.push({
+          from: { x: px, y: py },
+          to: { x: cx, y: cy },
+          color: "#a682ff"
+        });
+
+        // === Grandchildren
+        if (child.children?.length > 0) {
+          const gStartX = cx - ((child.children.length - 1) * gapX) / 2;
+          child.children.forEach((grand, k) => {
+            const gx = gStartX + k * gapX;
+            const gy = cy + gapY;
+            nodes.push({ person: grand, x: gx, y: gy });
+
+            // Link child → grandchild
+            lines.push({
+              from: { x: cx, y: cy },
+              to: { x: gx, y: gy },
+              color: "#ffc300"
+            });
+          });
+        }
+      });
+    }
   });
 
-  // Render lines
-  lines.forEach(line => {
+  // === Render lines first
+  lines.forEach((line) => {
     const path = document.createElementNS("http://www.w3.org/2000/svg", "line");
     path.setAttribute("x1", line.from.x);
     path.setAttribute("y1", line.from.y);
     path.setAttribute("x2", line.to.x);
     path.setAttribute("y2", line.to.y);
-    path.setAttribute("stroke", line.color || "#aaa");
+    path.setAttribute("stroke", line.color);
     path.setAttribute("stroke-width", "2");
     svg.appendChild(path);
   });
 
-  // Render nodes
-  nodes.forEach(node => {
+  // === Render nodes
+  nodes.forEach((node) => {
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circle.setAttribute("cx", node.x);
     circle.setAttribute("cy", node.y);
-    circle.setAttribute("r", 35);
+    circle.setAttribute("r", nodeRadius);
     circle.setAttribute("fill", "#6c63ff");
     g.appendChild(circle);
 
-    const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    img.setAttribute("href", node.person.image || "");
-    img.setAttribute("x", node.x - 25);
-    img.setAttribute("y", node.y - 25);
-    img.setAttribute("width", 50);
-    img.setAttribute("height", 50);
-    img.setAttribute("clip-path", "circle(25px at center)");
-    g.appendChild(img);
+    if (node.person.image) {
+      const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      img.setAttribute("href", node.person.image);
+      img.setAttribute("x", node.x - 25);
+      img.setAttribute("y", node.y - 25);
+      img.setAttribute("width", 50);
+      img.setAttribute("height", 50);
+      img.setAttribute("clip-path", "circle(25px at center)");
+      g.appendChild(img);
+    } else {
+      const textEmoji = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      textEmoji.setAttribute("x", node.x);
+      textEmoji.setAttribute("y", node.y + 8);
+      textEmoji.setAttribute("text-anchor", "middle");
+      textEmoji.setAttribute("font-size", "24");
+      textEmoji.textContent = node.person.emoji || "❓";
+      g.appendChild(textEmoji);
+    }
 
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", node.x);
-    text.setAttribute("y", node.y + 50);
-    text.setAttribute("text-anchor", "middle");
-    text.setAttribute("fill", "#fff");
-    text.setAttribute("font-size", "12");
-    text.textContent = node.person.name;
-    g.appendChild(text);
+    const textLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    textLabel.setAttribute("x", node.x);
+    textLabel.setAttribute("y", node.y + nodeRadius + 18);
+    textLabel.setAttribute("text-anchor", "middle");
+    textLabel.setAttribute("fill", "#fff");
+    textLabel.setAttribute("font-size", "12");
+    textLabel.textContent = node.person.name;
+    g.appendChild(textLabel);
+
+    g.onclick = () => {
+      window.location.href = `profile.html?id=${node.person.id}`;
+    };
 
     svg.appendChild(g);
   });
@@ -310,5 +362,7 @@ function renderMiniMap() {
 
 
 renderMiniMap();
-window.addEventListener("load", () => drawSVGTree(familyData.grandparents[currentGrandIndex]));
-// window.addEventListener("resize", () => setTimeout(drawConnections, 100));
+renderTree(familyData.grandparents[currentGrandIndex]);
+// drawSVGTree(familyData.grandparents[currentGrandIndex]);
+// window.addEventListener("load", () => drawSVGTree(familyData.grandparents[currentGrandIndex]));
+// // window.addEventListener("resize", () => setTimeout(drawConnections, 100));
