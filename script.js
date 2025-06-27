@@ -2,135 +2,130 @@
 let currentGrandIndex = 0;
 let grandparent = familyData.grandparents[currentGrandIndex];
 
-function createPersonElement(person, className) {
+function renderTree(grandparent) {
+  clearView();
+  renderHeader(grandparent);
+  renderGrandparent(grandparent);
+  renderParents(grandparent.children);
+  renderMiniMap();
+  drawConnections();
+}
+
+function clearView() {
+  document.getElementById("grandparent-gen").innerHTML = "";
+  document.getElementById("parent-gen").innerHTML = "";
+  document.getElementById("connectors").innerHTML = "";
+}
+
+function renderHeader(grandparent) {
+  const header = document.getElementById("grandparent-name");
+  header.textContent = grandparent.name || "Unnamed";
+}
+
+function renderGrandparent(grandparent) {
+  const grandGen = document.getElementById("grandparent-gen");
+  const wrapper = document.createElement("div");
+  wrapper.className = "person-wrapper";
+
+  const left = renderPartners(grandparent.partners, "left");
+  const right = renderPartners([], "right"); // add dynamic switching later
+  const grandNode = createPersonNode(grandparent, "grandparent");
+
+  wrapper.appendChild(left);
+  wrapper.appendChild(grandNode);
+  wrapper.appendChild(right);
+
+  grandGen.appendChild(wrapper);
+}
+
+function renderParents(parents) {
+  const parentGen = document.getElementById("parent-gen");
+
+  parents.forEach((parent) => {
+    const block = document.createElement("div");
+    block.className = "parent-block";
+
+    const parentWrap = document.createElement("div");
+    parentWrap.className = "person-wrapper";
+
+    const left = renderPartners(parent.partners, "left");
+    const right = renderPartners([], "right");
+    const parentEl = createPersonNode(parent, "parent");
+
+    parentWrap.appendChild(left);
+    parentWrap.appendChild(parentEl);
+    parentWrap.appendChild(right);
+    block.appendChild(parentWrap);
+
+    const childRow = document.createElement("div");
+    childRow.className = "children-row";
+
+    parent.children?.forEach((child) => {
+      const childWrap = document.createElement("div");
+      childWrap.className = "child-block";
+
+      const childEl = createPersonNode(child, "child");
+      childWrap.appendChild(childEl);
+
+      // 👶 render grandchildren
+      if (child.children && child.children.length > 0) {
+        const grandRow = document.createElement("div");
+        grandRow.className = "grandchildren-row";
+
+        child.children.forEach((grand) => {
+          const grandEl = createPersonNode(grand, "grandchild");
+          grandRow.appendChild(grandEl);
+        });
+
+        childWrap.appendChild(grandRow);
+      }
+
+      childRow.appendChild(childWrap);
+    });
+
+    block.appendChild(childRow);
+    parentGen.appendChild(block);
+  });
+}
+
+function renderPartners(partners, side = "left") {
+  const col = document.createElement("div");
+  col.className = `partner-column ${side}`;
+
+  partners.forEach((p) => {
+    const icon = document.createElement("div");
+    icon.className = "partner-icon";
+    icon.title = p.name;
+    icon.textContent = p.emoji || "💍";
+    icon.onclick = () => alert(`Switching to partner: ${p.name}`);
+    col.appendChild(icon);
+  });
+
+  return col;
+}
+
+function createPersonNode(person, role = "child") {
   const el = document.createElement("div");
-  el.className = `person ${className}`;
+  el.className = `person ${role}`;
   el.title = person.name;
 
-  const img = document.createElement("img");
-  img.src = person.image || "";
-  img.alt = person.name;
-  img.onerror = () => {
-    img.remove();
+  if (person.image) {
+    const img = document.createElement("img");
+    img.src = person.image;
+    img.alt = person.name;
+    img.onerror = () => {
+      el.textContent = person.emoji || "❓";
+    };
+    el.appendChild(img);
+  } else {
     el.textContent = person.emoji || "❓";
-  };
-  img.loading = "lazy";
+  }
 
-  el.appendChild(img);
   el.onclick = () => {
     window.location.href = `profile.html?id=${person.id}`;
   };
 
   return el;
-}
-
-
-function renderTree(grandparent) {
-  document.getElementById("grandparent-gen").innerHTML = "";
-  document.getElementById("parent-gen").innerHTML = "";
-  document.getElementById("connectors").innerHTML = "";
-
-  document.getElementById("grandparent-name").textContent = grandparent.name;
-
-  // Render Grandparent
-  const grandGen = document.getElementById("grandparent-gen");
-  const grandWrapper = document.createElement("div");
-  grandWrapper.className = "person-wrapper";
-
-  const leftPartnerCol = document.createElement("div");
-  leftPartnerCol.className = "partner-column left";
-  grandparent.partners.forEach((partner) => {
-    const icon = document.createElement("div");
-    icon.className = "partner-icon";
-    icon.title = partner.name;
-    icon.textContent = partner.emoji;
-    icon.onclick = () => alert(`Switching to partner: ${partner.name}`);
-    leftPartnerCol.appendChild(icon);
-  });
-
-  const grandEl = createPersonElement(grandparent, "grandparent");
-  grandEl.setAttribute("data-id", "grand");
-  grandEl.title = grandparent.name;
-  grandEl.onclick = () => {
-    window.location.href = `profile.html?id=${grandparent.id}`;
-  };
-
-  const rightPartnerCol = document.createElement("div");
-  rightPartnerCol.className = "partner-column right";
-
-  grandWrapper.appendChild(leftPartnerCol);
-  grandWrapper.appendChild(grandEl);
-  grandWrapper.appendChild(rightPartnerCol);
-  grandGen.appendChild(grandWrapper);
-
-  // Render Parents + Children
-  const parentGen = document.getElementById("parent-gen");
-
-  grandparent.children.forEach((parent, index) => {
-    const block = document.createElement("div");
-    block.className = "parent-block";
-
-    const parentWrapper = document.createElement("div");
-    parentWrapper.className = "person-wrapper";
-
-    const leftCol = document.createElement("div");
-    leftCol.className = "partner-column left";
-    parent.partners.forEach((partner) => {
-      const icon = document.createElement("div");
-      icon.className = "partner-icon";
-      icon.textContent = partner.emoji;
-      icon.title = partner.name;
-      icon.onclick = () => alert(`Switching to partner: ${partner.name}`);
-      leftCol.appendChild(icon);
-    });
-
-    const nodeEl = createPersonElement(parent, "parent");
-    nodeEl.title = parent.name;
-    nodeEl.setAttribute("data-id", `parent-${index}`);
-    nodeEl.onclick = () => {
-      window.location.href = `profile.html?id=${parent.id}`;
-    };
-
-    const rightCol = document.createElement("div");
-    rightCol.className = "partner-column right";
-
-    parentWrapper.appendChild(leftCol);
-    parentWrapper.appendChild(nodeEl);
-    parentWrapper.appendChild(rightCol);
-    block.appendChild(parentWrapper);
-
-      const childRow = document.createElement("div");
-  childRow.className = "children-row";
-
-  parent.children.forEach((child) => {
-    const childWrapper = document.createElement("div");
-    childWrapper.className = "child-block"; // new wrapper
-
-    const childEl = createPersonElement(child, "child");
-    childWrapper.appendChild(childEl);
-
-    // --- Render grandchildren if child has children ---
-    if (child.children && child.children.length > 0) {
-      const grandchildRow = document.createElement("div");
-      grandchildRow.className = "grandchildren-row";
-
-      child.children.forEach((grandchild) => {
-        const grandchildEl = createPersonElement(grandchild, "grandchild");
-        grandchildRow.appendChild(grandchildEl);
-      });
-
-      childWrapper.appendChild(grandchildRow);
-    }
-
-    childRow.appendChild(childWrapper);
-  });
-
-  block.appendChild(childRow);
-
-    parentGen.appendChild(block);
-  });
-
-  setTimeout(drawConnections, 100);
 }
 
 function drawConnections() {
@@ -204,6 +199,84 @@ function drawConnections() {
 
 }
 
+function drawSVGTree(grandparent) {
+  const svg = document.getElementById("svg-tree");
+  svg.innerHTML = ""; // Clear previous
+
+  const nodes = [];
+  const lines = [];
+
+  const centerX = window.innerWidth / 2;
+  const baseY = 100;
+
+  // 1. Grandparent node
+  nodes.push({
+    person: grandparent,
+    x: centerX,
+    y: baseY
+  });
+
+  // 2. Parent nodes
+  const gap = 150;
+  grandparent.children.forEach((parent, i) => {
+    const px = centerX - ((grandparent.children.length - 1) * gap) / 2 + i * gap;
+    const py = baseY + 150;
+
+    nodes.push({ person: parent, x: px, y: py });
+
+    lines.push({
+      from: { x: centerX, y: baseY },
+      to: { x: px, y: py },
+      color: "#bfbfbf"
+    });
+  });
+
+  // Render lines
+  lines.forEach(line => {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    path.setAttribute("x1", line.from.x);
+    path.setAttribute("y1", line.from.y);
+    path.setAttribute("x2", line.to.x);
+    path.setAttribute("y2", line.to.y);
+    path.setAttribute("stroke", line.color || "#aaa");
+    path.setAttribute("stroke-width", "2");
+    svg.appendChild(path);
+  });
+
+  // Render nodes
+  nodes.forEach(node => {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", node.x);
+    circle.setAttribute("cy", node.y);
+    circle.setAttribute("r", 35);
+    circle.setAttribute("fill", "#6c63ff");
+    g.appendChild(circle);
+
+    const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    img.setAttribute("href", node.person.image || "");
+    img.setAttribute("x", node.x - 25);
+    img.setAttribute("y", node.y - 25);
+    img.setAttribute("width", 50);
+    img.setAttribute("height", 50);
+    img.setAttribute("clip-path", "circle(25px at center)");
+    g.appendChild(img);
+
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", node.x);
+    text.setAttribute("y", node.y + 50);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("fill", "#fff");
+    text.setAttribute("font-size", "12");
+    text.textContent = node.person.name;
+    g.appendChild(text);
+
+    svg.appendChild(g);
+  });
+}
+
+
 // Grandparent navigation
 document.getElementById("prev-grand").onclick = () => {
   currentGrandIndex = (currentGrandIndex - 1 + familyData.grandparents.length) % familyData.grandparents.length;
@@ -237,7 +310,5 @@ function renderMiniMap() {
 
 
 renderMiniMap();
-window.addEventListener("load", () => renderTree(grandparent));
-window.addEventListener("resize", () => setTimeout(drawConnections, 100));
-
-
+window.addEventListener("load", () => drawSVGTree(familyData.grandparents[currentGrandIndex]));
+// window.addEventListener("resize", () => setTimeout(drawConnections, 100));
